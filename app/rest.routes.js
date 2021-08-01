@@ -1,12 +1,12 @@
 module.exports = app => {
-  const hot_posts = require("../controllers/post.controller.js");
+  const hot_posts = require("./controller/post.controller.js");
 
   
   // Retrieve all Customers
-  app.get("/customers", customers.findAll);
+  app.get("/hot-posts/start-datetime/:timestampStart/end-datetime/:timestampEnd/:order?", hot_posts.findByTimestamp);
 
   // Retrieve a single Customer with customerId
-  app.get("/customers/:customerId", customers.findOne);
+  app.get("/authors/order/:order", hot_posts.findAuthors);
 
   
 };
