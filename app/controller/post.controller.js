@@ -32,10 +32,18 @@ exports.create = (req, res) => {
 };
 
 // Retrieve all posts from the database.
-exports.findByTimestamp = (req, res) => {
+exports.findByDate = (req, res) => {
 	let order;
-	if (isNaN( parseInt(req.params.timestampStart)) || isNaN(parseInt(req.params.timestampEnd))){
-		res.status(500).send({message:"Parametros inválidos"});
+	let start = req.params.startDate;
+	let end = req.params.endDate;
+	let valid = false;
+	if (new Date(start).toString() !== "Invalid Date" && new Date(end).toString() !== "Invalid Date") {
+		if (new Date(start).toISOString().includes(start) && new Date(end).toISOString().includes(end)) {
+			valid = true;
+		}
+	}
+	if (!valid){
+		res.status(500).send({message:"Parametros de data inválidos"});
 	}else{
 		if (req.params.order === undefined) {
 			order = "id";
@@ -48,7 +56,8 @@ exports.findByTimestamp = (req, res) => {
 			res.status(500).send({message:"Ordem invalida"});	
 			return;
 		}
-		Post.getAllByTimestamp(req.params.timestampStart, req.params.timestampEnd, order, (err, data) => {
+		console.log(order);
+		Post.getAllByDate(start, end, order, (err, data) => {
 			if (err){
 				console.log(err);
 				res.status(500).send({

@@ -22,13 +22,15 @@ Post.create = (newPost, result) => {
 	});
 };
 
-Post.getAllByTimestamp = (startTime,endTime,order,result) => {
-	sql.query(`SELECT * FROM
+Post.getAllByDate = (startDate,endDate,order,result) => {
+	let query = `SELECT * FROM
 				hot_posts
 			WHERE
-				created_timestamp BETWEEN ${startTime} AND ${endTime}
-			ORDER BY ${order}
-		`, (err, res) => {
+				created_timestamp BETWEEN ? AND ?
+			ORDER BY ${order} DESC
+		`;
+		
+	sql.query(query,[startDate,endDate], (err, res) => {
 		if (err) {
 			console.log("error: ", err);
 			result(null, err);
@@ -37,8 +39,8 @@ Post.getAllByTimestamp = (startTime,endTime,order,result) => {
 
 		
 		if (res.length) {
-			console.log("found Post: ", res[0]);
-			result(null, res[0]);
+			
+			result(null, res);
 			return;
 		}
 
@@ -49,11 +51,14 @@ Post.getAllByTimestamp = (startTime,endTime,order,result) => {
 
 
 Post.getAuthors = (order, result) => {
-	sql.query(`SELECT author,sum(up_votes),sum(comments) FROM 
+	let query = `SELECT author,sum(up_votes) up_votes,sum(comments) comments FROM 
 				hot_posts 
 			GROUP BY author 
-			ORDER BY ${order}
-		`, (err, res) => {
+			ORDER BY ${order} DESC
+		`;
+	console.log(query);
+
+	sql.query(query, (err, res) => {
 		if (err) {
 			console.log("error: ", err);
 			result(err, null);
@@ -61,8 +66,8 @@ Post.getAuthors = (order, result) => {
 		}
 
 		if (res.length) {
-			console.log("found Post: ", res[0]);
-			result(null, res[0]);
+			
+			result(null, res);
 			return;
 		}
 

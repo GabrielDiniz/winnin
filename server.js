@@ -1,5 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cron = require('node-cron');
+const job = require("./app/jobs/posts.job.js");
+const config = require("./config/app.config.js");
 
 const app = express();
 
@@ -20,3 +23,16 @@ require("./app/rest.routes.js")(app);
 app.listen(8000, () => {
   console.log("Server is running on port 8000.");
 });
+
+
+
+let jobConf = config.job;
+let schedule = `${jobConf.retrieveMinute} ${jobConf.retrieveHour} * * *`;
+
+
+cron.schedule(schedule, () => {
+  job.execute();
+});
+ 
+
+
