@@ -12,24 +12,19 @@ app.use(bodyParser.json());
 // parse requests of content-type: application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// simple route
-app.get("/", (req, res) => {
-  res.json("Hello World!!!");
-});
-
 require("./app/rest.routes.js")(app);
 
 // set port, listen for requests
-app.listen(8000, () => {
-  console.log("Server is running on port 8000.");
+app.listen(config.app.port, () => {
+  console.log("Server is running on port "+config.app.port);
 });
 
 
-
+// busca das configurações o agendamento do cron
 let jobConf = config.job;
-let schedule = `${jobConf.retrieveMinute} ${jobConf.retrieveHour} * * *`;
+let schedule = `${jobConf.cronMinuto} ${jobConf.cronHora} * * *`;
 
-
+//agenda o job de acordo com o configurado
 cron.schedule(schedule, () => {
   job.execute();
 });
